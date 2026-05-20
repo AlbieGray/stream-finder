@@ -30,7 +30,6 @@ export default function SearchPage() {
 
   return (
     <main>
-      <div className="test-banner">CI/CD pipeline test — deployed via GitHub Actions</div>
       <h1>Stream Finder</h1>
       <p className="subtitle">Find where movies and shows are streaming</p>
       <input
