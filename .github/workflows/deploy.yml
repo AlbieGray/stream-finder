@@ -23,16 +23,38 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: move frontend into wwwroot
-      
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
+
+      - uses: actions/checkout@v4
+      - name: setup node frontend
+        uses: actions/setup-node@v4
         with:
-          name: .net-app
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+        run: npm ci
+        run: npm run build --if-present
+        working-directory: frontend
+
+      - name: copy frontend to wwwroot
+        run: mkdir backend/wwwroot
+        run: cp -r frontend/dist/* backend/wwwroot/
+      
+      # - name: Download artifact from build job
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: .net-app
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: build and publish backend
+        run: dotnet publish --configuration Release --output publish
+        working-directory: backend
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
