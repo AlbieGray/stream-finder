@@ -1,4 +1,4 @@
-name: .NET
+name: build
 
 on:
   push:
@@ -27,3 +27,22 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+
+  frontend:
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: setup node frontend
+      uses: actions/setup-node@v4
+      with:
+        node-version: 11.x
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm test
