@@ -6,3 +6,4 @@ obj/
 *.suo
 .env
 *.log
+backend/wwwroot/
